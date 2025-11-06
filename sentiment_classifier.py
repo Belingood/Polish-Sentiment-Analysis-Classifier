@@ -72,12 +72,29 @@ print("Oznacza to, że model poprawnie sklasyfikował", int(accuracy * len(y_tra
 cm = confusion_matrix(y_train, predictions)
 tn, fp, fn, tp = cm.ravel()
 
-print("\n--- SZCZEGÓŁOWA ANALIZA METRYK ---\n")
-print("Macierz pomyłek (Confusion Matrix):")
-print(f"                  | Predykcja: Negatywna | Predykcja: Pozytywna |")
-print(f"------------------|----------------------|----------------------|")
-print(f"Rzeczywista: Neg. | TN = {tn:<15} | FP = {fp:<15} |")
-print(f"Rzeczywista: Poz. | FN = {fn:<15} | TP = {tp:<15} |")
+# --- KROK 5: DRUKOWANIE WYNIKÓW ---
+
+HEADER_WIDTH = 18
+CELL_WIDTH = 24
+
+row_separator = f"{'-' * HEADER_WIDTH}-+-{'-' * CELL_WIDTH}-+-{'-' * CELL_WIDTH}-|"
+header_line = f"{'':<{HEADER_WIDTH}} | {'Predykcja: Negatywna':^{CELL_WIDTH}} | {'Predykcja: Pozytywna':^{CELL_WIDTH}} |"
+
+tn_cell = f"TN = {tn}"
+fp_cell = f"FP = {fp}"
+fn_cell = f"FN = {fn}"
+tp_cell = f"TP = {tp}"
+
+row_neg = f"{'Rzeczywista: Neg.':<{HEADER_WIDTH}} | {tn_cell:^{CELL_WIDTH}} | {fp_cell:^{CELL_WIDTH}} |"
+row_pos = f"{'Rzeczywista: Poz.':<{HEADER_WIDTH}} | {fn_cell:^{CELL_WIDTH}} | {tp_cell:^{CELL_WIDTH}} |"
+
+print("\n--- SZCZEGÓŁOWA ANALIZA METRYK ---")
+print("Macierz pomyłek (Confusion Matrix):\n")
+print(header_line)
+print(row_separator)
+print(row_neg)
+print(row_pos)
+
 print("\nObjaśnienie terminów:")
 print(f"  [TP] True Positive (Prawdziwie Pozytywne): {tp} - Poprawnie zidentyfikowane pozytywne opinie.")
 print(f"  [TN] True Negative (Prawdziwie Negatywne): {tn} - Poprawnie zidentyfikowane negatywne opinie.")
