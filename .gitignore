@@ -71,3 +71,7 @@ Thumbs.db
 *.env
 secrets.toml
 .htpasswd
+
+# Data files
+tfidf_vectors.csv
+word_coefficients.csv

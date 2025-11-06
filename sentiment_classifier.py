@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -72,7 +73,74 @@ print("Oznacza to, że model poprawnie sklasyfikował", int(accuracy * len(y_tra
 cm = confusion_matrix(y_train, predictions)
 tn, fp, fn, tp = cm.ravel()
 
-# --- KROK 5: DRUKOWANIE WYNIKÓW ---
+
+# --- KROK 5: EKSPLORACJA DANYCH I OPCJONALNY EKSPORT WYNIKÓW ---
+
+print("\n--- EKSPLORACJA WEKTORÓW I WAG MODELU ---")
+
+# Задаем вопрос пользователю
+export_choice = input("Czy chcesz wyeksportować wektory TF-IDF oraz wagi modelu do plików CSV? (t/n): ").lower()
+
+if export_choice == 't':
+    try:
+        print("\n>>> Przygotowuję dane do eksportu...")
+
+        # --- 1. Przygotowanie tabeli wektorów TF-IDF ---
+
+        # Pobieramy nazwy wszystkich słów (cech) z naszego słownika
+        feature_names = vectorizer.get_feature_names_out()
+
+        # Konwertujemy rzadką macierz TF-IDF na gęstą tablicę NumPy
+        dense_matrix = X_train_vectors.toarray()
+
+        # Tworzymy DataFrame z biblioteki Pandas
+        tfidf_df = pd.DataFrame(dense_matrix, columns=feature_names)
+
+        # Dodajemy na początku kolumny z oryginalnymi danymi dla lepszej czytelności
+        tfidf_df.insert(0, 'SENTYMENT_RZECZYWISTY', y_train)
+        tfidf_df.insert(0, 'ORYGINALNA_OPINIA', X_train_text)
+
+        # --- 2. Przygotowanie tabeli współczynników (wag) modelu ---
+
+        # Pobieramy współczynniki nauczone przez model
+        # model.coef_[0] zawiera wagi dla klasy "1" (pozytywnej)
+        coefficients = model.coef_[0]
+
+        # Tworzymy DataFrame, łącząc słowa z ich wagami
+        coef_df = pd.DataFrame({'SŁOWO': feature_names, 'WAGA_WSPÓŁCZYNNIKA': coefficients})
+
+        # Sortujemy, aby zobaczyć, które słowa mają największy wpływ
+        coef_df = coef_df.sort_values(by='WAGA_WSPÓŁCZYNNIKA', ascending=False)
+
+        # --- 3. Zapis do plików ---
+
+        # Zapisujemy do plików CSV. Używamy kodowania 'utf-8-sig' aby polskie znaki
+        # poprawnie otwierały się w programie Excel.
+        tfidf_filename = 'tfidf_vectors.csv'
+        coef_filename = 'word_coefficients.csv'
+
+        tfidf_df.to_csv(tfidf_filename, index=False, encoding='utf-8-sig')
+        coef_df.to_csv(coef_filename, index=False, encoding='utf-8-sig')
+
+        print(f">>> Pomyślnie zapisano dane do plików:")
+        print(f"  - Wektory TF-IDF: {tfidf_filename}")
+        print(f"  - Wagi modelu: {coef_filename}")
+
+        # WSKAZÓWKA: Aby zapisać do formatu Excel (.xlsx), odkomentuj poniższe linie
+        # i upewnij się, że masz zainstalowaną bibliotekę 'openpyxl' (pip install openpyxl)
+        # tfidf_df.to_excel('tfidf_vectors.xlsx', index=False)
+        # coef_df.to_excel('word_coefficients.xlsx', index=False)
+
+    except ImportError:
+        print("\nBŁĄD: Biblioteka 'pandas' nie jest zainstalowana.")
+        print("Proszę ją zainstalować komendą: pip install pandas")
+    except Exception as e:
+        print(f"\nWystąpił nieoczekiwany błąd podczas eksportu: {e}")
+
+else:
+    print("\n>>> Pominięto eksport danych.")
+
+# --- KROK 6: DRUKOWANIE WYNIKÓW ---
 
 HEADER_WIDTH = 18
 CELL_WIDTH = 24
