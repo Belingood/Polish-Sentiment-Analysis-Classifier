@@ -90,15 +90,32 @@ if export_choice == 't':
         # Pobieramy nazwy wszystkich słów (cech) z naszego słownika
         feature_names = vectorizer.get_feature_names_out()
 
-        # Konwertujemy rzadką macierz TF-IDF na gęstą tablicę NumPy
-        dense_matrix = X_train_vectors.toarray()
+        # Tworzymy listę, która będzie przechowywać nasze skompresowane wektory
+        compact_vectors = []
 
-        # Tworzymy DataFrame z biblioteki Pandas
-        tfidf_df = pd.DataFrame(dense_matrix, columns=feature_names)
+        # Iterujemy po każdej opinii (każdym wierszu naszej macierzy TF-IDF)
+        # X_train_vectors to macierz rzadka (sparse matrix), idealna do takiej operacji
+        for i in range(X_train_vectors.shape[0]):
+            # Pobieramy jeden wiersz (jedną opinię)
+            row = X_train_vectors.getrow(i)
 
-        # Dodajemy na początku kolumny z oryginalnymi danymi dla lepszej czytelności
-        tfidf_df.insert(0, 'SENTYMENT_RZECZYWISTY', y_train)
-        tfidf_df.insert(0, 'ORYGINALNA_OPINIA', X_train_text)
+            # Tworzymy reprezentację słowo:wartość tylko dla niezerowych elementów
+            # row.indices -> indeksy kolumn (słów) z wartością > 0
+            # row.data -> odpowiadające im wartości TF-IDF
+            vector_representation = [
+                f"{feature_names[col_index]}:{value:.2f}"
+                for col_index, value in zip(row.indices, row.data)
+            ]
+
+            # Łączymy wszystko w jeden czytelny ciąg znaków
+            compact_vectors.append(", ".join(vector_representation))
+
+        # Tworzymy nowy, bardziej informacyjny DataFrame z biblioteki Pandas
+        tfidf_df_compact = pd.DataFrame({
+            'ORYGINALNA_OPINIA': X_train_text,
+            'SENTYMENT_RZECZYWISTY': y_train,
+            'WEKTOR_TF_IDF (Słowo:Waga)': compact_vectors
+        })
 
         # --- 2. Przygotowanie tabeli współczynników (wag) modelu ---
 
@@ -116,10 +133,10 @@ if export_choice == 't':
 
         # Zapisujemy do plików CSV. Używamy kodowania 'utf-8-sig' aby polskie znaki
         # poprawnie otwierały się w programie Excel.
-        tfidf_filename = 'tfidf_vectors.csv'
+        tfidf_filename = 'tfidf_vectors_compact.csv'
         coef_filename = 'word_coefficients.csv'
 
-        tfidf_df.to_csv(tfidf_filename, index=False, encoding='utf-8-sig')
+        tfidf_df_compact.to_csv(tfidf_filename, index=False, encoding='utf-8-sig')
         coef_df.to_csv(coef_filename, index=False, encoding='utf-8-sig')
 
         print(f">>> Pomyślnie zapisano dane do plików:")

@@ -55,6 +55,27 @@ python sentiment_classifier.py
 
 The script will output the model's accuracy and a detailed confusion matrix directly to the console.
 
+## Data Export for Analysis
+
+To allow for a deeper understanding of the model's inner workings, the script includes an optional feature to export the results of the vectorization and the learned model weights.
+
+After the main evaluation, you will be prompted in the console:
+```
+Czy chcesz wyeksportować wektory TF-IDF oraz wagi modelu do plików CSV? (t/n):
+```
+Enter `t` (for "tak" - yes) to generate the following files in the project root:
+
+1.  **`tfidf_vectors_compact.csv`**
+    This file shows the result of the TF-IDF transformation in a compact, human-readable format.
+    -   `ORYGINALNA_OPINIA`: The original review text.
+    -   `SENTYMENT_RZECZYWISTY`: The true sentiment label (1 or 0).
+    -   `WEKTOR_TF_IDF (Słowo:Waga)`: A string representing the vector for that review, containing only the words present in the text and their corresponding TF-IDF scores.
+
+2.  **`word_coefficients.csv`**
+    This file reveals the "brain" of the model. It contains every word from the vocabulary and the weight (coefficient) the Logistic Regression model assigned to it.
+    -   `SŁOWO`: A unique word from the dataset's vocabulary.
+    -   `WAGA_WSPÓŁCZYNNIKA`: The learned coefficient. A high positive value means the word is a strong indicator of a **positive** review, while a large negative value indicates a **negative** review.
+
 ## Results and Evaluation
 
 The model was trained and evaluated on the same set of 20 reviews. On this dataset, it achieved **100% accuracy**.

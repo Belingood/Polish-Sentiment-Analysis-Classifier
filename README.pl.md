@@ -53,6 +53,27 @@ Aby uruchomić skrypt klasyfikacyjny i zobaczyć wyniki, wykonaj następujące p
 python sentiment_classifier.py
 ```
 
+## Eksport Danych do Analizy
+
+Aby umożliwić głębsze zrozumienie wewnętrznego działania modelu, skrypt zawiera opcjonalną funkcję eksportu wyników wektoryzacji oraz nauczonych wag modelu.
+
+Po zakończeniu głównej oceny, w konsoli pojawi się pytanie:
+```
+Czy chcesz wyeksportować wektory TF-IDF oraz wagi modelu do plików CSV? (t/n):
+```
+Wprowadzenie `t` (tak) spowoduje wygenerowanie następujących plików w głównym folderze projektu:
+
+1.  **`tfidf_vectors_compact.csv`**
+    Ten plik prezentuje wynik transformacji TF-IDF w skompresowanym, czytelnym dla człowieka formacie.
+    -   `ORYGINALNA_OPINIA`: Oryginalny tekst recenzji.
+    -   `SENTYMENT_RZECZYWISTY`: Prawdziwa etykieta sentymentu (1 lub 0).
+    -   `WEKTOR_TF_IDF (Słowo:Waga)`: Ciąg znaków reprezentujący wektor dla danej recenzji, zawierający tylko te słowa, które w niej wystąpiły, wraz z ich wagami TF-IDF.
+
+2.  **`word_coefficients.csv`**
+    Ten plik odkrywa "mózg" modelu. Zawiera każde słowo ze słownika oraz wagę (współczynnik), jaką model Regresji Logistycznej mu przypisał.
+    -   `SŁOWO`: Unikalne słowo ze słownika danych.
+    -   `WAGA_WSPÓŁCZYNNIKA`: Nauczony współczynnik. Wysoka wartość dodatnia oznacza, że słowo jest silnym wskaźnikiem recenzji **pozytywnej**, podczas gdy duża wartość ujemna wskazuje na recenzję **negatywną**.
+
 Skrypt wyświetli w konsoli dokładność modelu oraz szczegółową macierz pomyłek.
 
 ## Wyniki i Ocena Modelu

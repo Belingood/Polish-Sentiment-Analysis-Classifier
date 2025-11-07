@@ -73,5 +73,5 @@ secrets.toml
 .htpasswd
 
 # Data files
-tfidf_vectors.csv
+tfidf_vectors_compact.csv
 word_coefficients.csv
